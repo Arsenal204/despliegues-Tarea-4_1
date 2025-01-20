@@ -1,11 +1,40 @@
 // Importamos las bibliotecas necesarias.
 const express = require("express");
+const { MongoClient } = require("mongodb");
 
 // Inicializamos la aplicación
 const app = express();
+const uri =
+  "mongodb+srv://diegorobles031204:fWw0pLPynOZjjkmU@cluster0.y72kv.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 
 // Indicamos que la aplicación puede recibir JSON (API Rest)
 app.use(express.json());
+
+const client = new MongoClient(uri, {
+  serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
+  },
+});
+let db;
+
+async function run() {
+  try {
+    // Connect the client to the server	(optional starting in v4.7)
+    await client.connect();
+    // Send a ping to confirm a successful connection
+    await client.db("admin").command({ ping: 1 });
+    console.log(
+      "Pinged your deployment. You successfully connected to MongoDB!"
+    );
+    //Podeis poner el código de la API aqui
+  } finally {
+    // Ensures that the client will close when you finish/error
+    await client.close();
+  }
+}
+run().catch(console.dir);
 
 // Indicamos el puerto en el que vamos a desplegar la aplicación
 const port = process.env.PORT || 8080;
@@ -29,6 +58,14 @@ let concesionarios = [
 ];
 
 // ** Endpoints **
+
+//PARA CAMBIAR POR LOS GETS
+//await db.collection('inventory').insertOne({
+//  item: 'canvas',
+//  qty: 100,
+//  tags: ['cotton'],
+//  size: { h: 28, w: 35.5, uom: 'cm' }
+// });
 
 // Obtener todos los concesionarios
 app.get("/concesionarios", (request, response) => {

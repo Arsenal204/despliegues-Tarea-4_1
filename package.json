@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/Arsenal204/Desarrollo-Servidor-Tarea-4_1/blob/develop/readme.md",
   "dependencies": {
-    "express": "^4.21.2"
+    "express": "^4.21.2",
+    "mongodb": "^6.12.0"
   }
 }

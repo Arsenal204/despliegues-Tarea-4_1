@@ -8,6 +8,8 @@
 // Importamos las bibliotecas necesarias.
 // Concretamente el framework express.
 const express = require("express");
+const swaggerUi = require("swagger-ui-express");
+const swaggerDocument = require("./swagger.json");
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 
 // Inicializamos la aplicación
@@ -17,6 +19,8 @@ const uri =
 
 // Indicamos que la aplicación puede recibir JSON (API Rest)
 app.use(express.json());
+
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 const client = new MongoClient(uri, {
   serverApi: {
@@ -107,4 +111,39 @@ app.post("/concesionarios/:id/coches", async (req, res) => {
     .collection("concesionarios")
     .updateOne({ _id: id }, { $push: { coches: nuevoCoche } });
   res.json({ message: "Coche añadido" });
+});
+// Obtener un coche de un concesionario
+app.get("/concesionarios/:id/coches/:cocheId", async (req, res) => {
+  const id = new ObjectId(req.params.id);
+  const cocheId = new ObjectId(req.params.cocheId);
+  const concesionario = await db
+    .collection("concesionarios")
+    .findOne({ _id: id });
+  const coche = concesionario?.coches.find((coche) =>
+    coche._id.equals(cocheId)
+  );
+  res.json(coche || { message: "Coche no encontrado" });
+});
+
+// Actualizar un coche de un concesionario
+app.put("/concesionarios/:id/coches/:cocheId", async (req, res) => {
+  const id = new ObjectId(req.params.id);
+  const cocheId = new ObjectId(req.params.cocheId);
+  await db
+    .collection("concesionarios")
+    .updateOne(
+      { _id: id, "coches._id": cocheId },
+      { $set: { "coches.$": req.body } }
+    );
+  res.json({ message: "Coche actualizado" });
+});
+
+// Borrar un coche de un concesionario
+app.delete("/concesionarios/:id/coches/:cocheId", async (req, res) => {
+  const id = new ObjectId(req.params.id);
+  const cocheId = new ObjectId(req.params.cocheId);
+  await db
+    .collection("concesionarios")
+    .updateOne({ _id: id }, { $pull: { coches: { _id: cocheId } } });
+  res.json({ message: "Coche eliminado" });
 });

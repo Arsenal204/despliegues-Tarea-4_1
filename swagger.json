@@ -1,0 +1,327 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Concesionarios API",
+    "version": "1.0.0"
+  },
+  "definitions": {
+    "Concesionario": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "nombre": {
+          "type": "string"
+        },
+        "direccion": {
+          "type": "string"
+        },
+        "coches": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Coche"
+          }
+        }
+      }
+    },
+    "Coche": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "modelo": {
+          "type": "string"
+        },
+        "marca": {
+          "type": "string"
+        },
+        "cv": {
+          "type": "integer"
+        },
+        "precio": {
+          "type": "integer"
+        }
+      }
+    }
+  },
+  "paths": {
+    "/concesionarios": {
+      "get": {
+        "summary": "Obtener todos los concesionarios",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Concesionario"
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Crear un nuevo concesionario",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "concesionario",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Concesionario"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Concesionario"
+            }
+          }
+        }
+      }
+    },
+    "/concesionarios/{id}": {
+      "get": {
+        "summary": "Obtener un concesionario por ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Concesionario"
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Actualizar un concesionario por ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "coche",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/Coche"
+              },
+              "example": {
+                "marca": "Nissan",
+                "modelo": "Skyline R34",
+                "cv": 300,
+                "precio": 100000
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Concesionario"
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/definitions/Concesionario"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Eliminar un concesionario por ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/concesionarios/{id}/coches": {
+      "get": {
+        "summary": "Obtener los coches de un concesionario por ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Coche"
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Añadir un coche a un concesionario por ID",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "coche",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/Coche"
+              },
+              "example": {
+                "marca": "Nissan",
+                "modelo": "Skyline R34",
+                "cv": 300,
+                "precio": 100000
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Concesionario"
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/definitions/Coche"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/concesionarios/{id}/coches/{cocheId}": {
+      "get": {
+        "summary": "Obtener un coche de un concesionario por ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "cocheId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Coche"
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Actualizar un coche de un concesionario por ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "coche",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/Coche"
+              },
+              "example": {
+                "marca": "Nissan",
+                "modelo": "Skyline R34",
+                "cv": 300,
+                "precio": 100000
+              }
+            }
+          },
+          {
+            "name": "cocheId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Coche"
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/definitions/Coche"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Eliminar un coche de un concesionario por ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "cocheId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    }
+  }
+}

@@ -28,9 +28,6 @@
     "Coche": {
       "type": "object",
       "properties": {
-        "id": {
-          "type": "string"
-        },
         "modelo": {
           "type": "string"
         },
@@ -191,6 +188,12 @@
         "summary": "Añadir un coche a un concesionario por ID",
         "parameters": [
           {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
             "in": "body",
             "name": "coche",
             "schema": {
@@ -261,6 +264,12 @@
             "type": "string"
           },
           {
+            "name": "cocheId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
             "in": "body",
             "name": "coche",
             "schema": {
@@ -274,12 +283,6 @@
                 "precio": 100000
               }
             }
-          },
-          {
-            "name": "cocheId",
-            "in": "path",
-            "required": true,
-            "type": "string"
           }
         ],
         "responses": {

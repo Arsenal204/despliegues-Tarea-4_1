@@ -8,8 +8,8 @@
 // Importamos las bibliotecas necesarias.
 // Concretamente el framework express.
 const express = require("express");
-const swaggerUi = require("swagger-ui-express");
-const swaggerDocument = require("./swagger.json");
+const SwaggerUi = require("swagger-ui-express");
+const SwaggerDocument = require("./swagger.json");
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 
 // Inicializamos la aplicación
@@ -20,7 +20,7 @@ const uri =
 // Indicamos que la aplicación puede recibir JSON (API Rest)
 app.use(express.json());
 
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use("/api-docs", SwaggerUi.serve, SwaggerUi.setup(SwaggerDocument));
 
 const client = new MongoClient(uri, {
   serverApi: {
@@ -114,36 +114,48 @@ app.post("/concesionarios/:id/coches", async (req, res) => {
 });
 // Obtener un coche de un concesionario
 app.get("/concesionarios/:id/coches/:cocheId", async (req, res) => {
-  const id = new ObjectId(req.params.id);
-  const cocheId = new ObjectId(req.params.cocheId);
-  const concesionario = await db
-    .collection("concesionarios")
-    .findOne({ _id: id });
-  const coche = concesionario?.coches.find((coche) =>
-    coche._id.equals(cocheId)
-  );
-  res.json(coche || { message: "Coche no encontrado" });
+  const { id, cocheId } = req.params;
+  const coche = await db.collection("concesionarios").findOne({
+    _id: new ObjectId(id),
+    "coches._id": cocheId,
+  });
+  if (coche) {
+    res.json(coche);
+  } else {
+    res.status(404).json({ message: "Coche no encontrado" });
+  }
 });
 
 // Actualizar un coche de un concesionario
 app.put("/concesionarios/:id/coches/:cocheId", async (req, res) => {
-  const id = new ObjectId(req.params.id);
-  const cocheId = new ObjectId(req.params.cocheId);
-  await db
-    .collection("concesionarios")
-    .updateOne(
-      { _id: id, "coches._id": cocheId },
-      { $set: { "coches.$": req.body } }
-    );
+  const { id, cocheId } = req.params;
+  const concesionario = await db.collection("concesionarios").findOne({
+    _id: new ObjectId(id),
+  });
+  concesionario.coches[parseInt(cocheId)] = req.body;
+  const result = await collection("concesionarios").updateOne(
+    { _id: new ObjectId(id) },
+    { $set: { coches: concesionario.coches } }
+  );
   res.json({ message: "Coche actualizado" });
+
+  if (result.modifiedCount === 0) {
+    res.status(404).json({ message: "Coche no encontrado" });
+  }
 });
 
 // Borrar un coche de un concesionario
 app.delete("/concesionarios/:id/coches/:cocheId", async (req, res) => {
-  const id = new ObjectId(req.params.id);
-  const cocheId = new ObjectId(req.params.cocheId);
-  await db
+  const { id, cocheId } = req.params;
+  const concesionario = await collection("concesionarios").findOne({
+    _id: new ObjectId(id),
+  });
+  concesionario.coches.splice(parseInt(cocheId), 1);
+  const result = await db
     .collection("concesionarios")
-    .updateOne({ _id: id }, { $pull: { coches: { _id: cocheId } } });
+    .updateOne(
+      { _id: new ObjectId(id) },
+      { $set: { coches: concesionario.coches } }
+    );
   res.json({ message: "Coche eliminado" });
 });
